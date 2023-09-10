@@ -9,9 +9,6 @@ const pool = new Pool({
   host: "localhost",
   database: "lightbnb",
 });
-//pool.query(`SELECT title FROM properties LIMIT 10;`).then((response) => {
-//console.log(response);
-//});
 
 /// Users
 
@@ -27,7 +24,6 @@ const getUserWithEmail = function (email) {
       if (res.rows.length === 0) {
         return null;
       } else {
-        console.log(res.rows);
         return res.rows[0];
       }
     })
@@ -45,7 +41,6 @@ const getUserWithId = function (id) {
   return pool
     .query(`SELECT * FROM users WHERE id = $1`, [id])
     .then((res) => {
-      console.log(res.rows);
       return res.rows[0];
     })
     .catch((err) => {
@@ -145,8 +140,6 @@ const getAllProperties = (options, limit = 10) => {
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
-  // Console log everything just to make sure we've done it right.
-  console.log(queryString, queryParams);
   // Run the query.
   return pool
     .query(queryString, queryParams)
@@ -169,13 +162,29 @@ const addProperty = function (property) {
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
   RETURNING *;
   `;
-  const values = [property.owner_id, property.title, property.description, property.thumbnail_photo_url, property.cover_photo_url, property.cost_per_night, property.parking_spaces, property.number_of_bathrooms, property.number_of_bedrooms, property.country, property.street, property.city, property.province, property.post_code];
-  
-  return pool.query(queryString, values)
-    .then(res => {
+  const values = [
+    property.owner_id,
+    property.title,
+    property.description,
+    property.thumbnail_photo_url,
+    property.cover_photo_url,
+    property.cost_per_night,
+    property.parking_spaces,
+    property.number_of_bathrooms,
+    property.number_of_bedrooms,
+    property.country,
+    property.street,
+    property.city,
+    property.province,
+    property.post_code,
+  ];
+
+  return pool
+    .query(queryString, values)
+    .then((res) => {
       return res.rows[0];
     })
-    .catch(err => {
+    .catch((err) => {
       return console.log(`Error Caught: ${err}`);
     });
 };
